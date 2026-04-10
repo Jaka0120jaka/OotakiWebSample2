@@ -1,0 +1,57 @@
+﻿@using OotakiWebSample2.Models
+@model OotakiWebSample2.Models.ScreenViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<link href="~/css/style.css" rel="stylesheet" />
+
+<div class="table-container">
+
+    <!-- ボタン -->
+    <div class="buttons">
+        <button class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#listModal">
+            表示設定
+        </button>
+    </div>
+    
+    <!-- 受付一覧テーブル -->
+    <table class="custom-table">
+        <!-- カラム名 -->
+        <tr>
+            @foreach (var item in Model.ListViewModels)
+            {
+                <th>@item.ItemName</th>
+            }
+        </tr>
+        <!-- データ -->
+        @{
+            var maxRow = Model.ListViewModels.Max(x => x.Values.Count);
+        }
+
+        @for (int i = 0; i < maxRow; i++)
+        {
+            <tr>
+                @foreach (var item in Model.ListViewModels)
+                {
+                    <td>
+                        @(item.Values.Count > i ? item.Values[i] : "")
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+
+    <!-- モーダル -->
+    @{
+        var modalModel = new ListModalModel
+        {
+            ListViewModels = Model.ListViewModels,
+            ListModal = "Screen1"
+        };
+    }
+
+    <partial name="_ListModal" model="modalModel" />
+
+</div>

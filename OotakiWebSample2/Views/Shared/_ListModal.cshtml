@@ -1,0 +1,47 @@
+﻿@model OotakiWebSample2.Models.ListModalModel
+
+<div class="modal fade" id="listModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- ヘッダー -->
+            <div class="modal-header">
+                <h5 class="modal-title">表示設定</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- ボディ -->
+            <div class="modal-body">
+
+                <div class="row">
+                    @foreach (var item in Model.ListViewModels)
+                    {
+                        <div class="col-2">
+                            <!-- 12 ÷ 5 ≒ 2 -->
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       value="@item.ItemName"
+                                       id="chk_@item.ItemName.Replace(" ", "_")"
+                                       checked />
+
+                                <label class="form-check-label"
+                                       for="chk_@item.ItemName.Replace(" ", "_")">
+                                    @item.ItemName
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <!-- フッター -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">適用</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+
+        </div>
+    </div>
+</div>

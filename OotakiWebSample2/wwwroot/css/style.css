@@ -1,0 +1,23 @@
+﻿.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 350px;
+}
+
+.custom-table {
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+    .custom-table th {
+        border: 1px solid #ccc;
+        padding: 10px;
+        white-space: nowrap;
+        background-color: #f5f5f5;
+    }
+
+    .custom-table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        white-space: nowrap;
+    }
