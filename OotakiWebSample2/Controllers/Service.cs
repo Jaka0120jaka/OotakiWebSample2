@@ -21,7 +21,7 @@ namespace OotakiWebSample2.Controllers
                 .GroupBy(x => x.ItemName)
                 .ToList();
 
-            // ViewModelに変換
+            // ViewModelに変換d
             var viewModel = new ScreenViewModel
             {
                 ListViewModels = grouped.Select(g => new ListViewModel
