@@ -23,5 +23,13 @@ namespace OotakiWebSample2.Repository
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        // visible_flgを更新する
+        public async Task UpdateVisibleFlagAsync(bool visibleFlg, string itemName, int screenId, int userId)
+        {
+            await _context.Database.ExecuteSqlRawAsync(
+                SqlQueryConstants.UpdateVisibleFlag,
+                visibleFlg, itemName, screenId, userId);
+        }
     }
 }

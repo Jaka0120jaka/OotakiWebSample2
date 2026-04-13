@@ -9,5 +9,6 @@
     {
         public string? ItemName { get; set; }
         public List<string?>? Values { get; set; }  // ←複数対応
+        public bool VisibleFlag { get; set; }
     }
 }

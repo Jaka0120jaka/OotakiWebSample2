@@ -11,8 +11,18 @@
         FROM hyouji_set_tbl h
         INNER JOIN item_info_mst i ON h.item_id = i.item_id
         INNER JOIN item_list_mst l ON l.item_id = i.item_id
-        WHERE h.visible_flg = true 
           AND h.scr_id = {0}
           AND h.user_id = {1}";
+
+
+        /*************visible_flgを更新するSQL************/
+        public const string UpdateVisibleFlag = @"
+        UPDATE hyouji_set_tbl h
+        SET visible_flg = {0}
+        FROM item_info_mst i
+        WHERE h.item_id = i.item_id
+          AND i.item_name = {1}
+          AND h.scr_id = {2}
+          AND h.user_id = {3}";
     }
 }

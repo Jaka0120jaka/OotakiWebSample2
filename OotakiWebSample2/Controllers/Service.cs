@@ -27,11 +27,17 @@ namespace OotakiWebSample2.Controllers
                 ListViewModels = grouped.Select(g => new ListViewModel
                 {
                     ItemName = g.Key,
-                    Values = g.Select(x => x.Value).ToList() // ←ここ重要
+                    Values = g.Select(x => x.Value).ToList(), 
+                    VisibleFlag = g.First().VisibleFlag
                 }).ToList()
             };
 
             return viewModel;
+        }
+
+        public async Task UpdateVisibleFlagAsync(bool visibleFlg, string itemName, int screenId, int userId)
+        {
+            await _repository.UpdateVisibleFlagAsync(visibleFlg, itemName, screenId, userId);
         }
     }
 }

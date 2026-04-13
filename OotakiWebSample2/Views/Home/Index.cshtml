@@ -3,55 +3,92 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+
 <link href="~/css/style.css" rel="stylesheet" />
 
-<div class="table-container">
+<div class="page-wrapper">
+    <div class="table-wrapper">
 
-    <!-- ボタン -->
-    <div class="buttons">
-        <button class="btn btn-primary"
+        <!-- ボタン：テーブル右上に固定 -->
+        <button class="btn btn-primary btn-settings"
                 data-bs-toggle="modal"
-                data-bs-target="#listModal">
+                data-bs-target="#listModal"
+                id="hyouji">
             表示設定
         </button>
-    </div>
-    
-    <!-- 受付一覧テーブル -->
-    <table class="custom-table">
-        <!-- カラム名 -->
-        <tr>
-            @foreach (var item in Model.ListViewModels)
-            {
-                <th>@item.ItemName</th>
-            }
-        </tr>
-        <!-- データ -->
-        @{
-            var maxRow = Model.ListViewModels.Max(x => x.Values.Count);
-        }
 
-        @for (int i = 0; i < maxRow; i++)
-        {
-            <tr>
-                @foreach (var item in Model.ListViewModels)
-                {
-                    <td>
-                        @(item.Values.Count > i ? item.Values[i] : "")
-                    </td>
+        <!-- 横スクロールエリア -->
+        <div class="scroll-area">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        @foreach (var item in Model.ListViewModels.Where(x => x.VisibleFlag))
+                        {
+                            <th data-col="@item.ItemName">@item.ItemName</th>
+                        }
+                    </tr>
+                </thead>
+                @{
+                    var maxRow = Model.ListViewModels.Max(x => x.Values.Count);
                 }
-            </tr>
+                <tbody>
+                    @for (int i = 0; i < maxRow; i++)
+                    {
+                        <tr>
+                            @foreach (var item in Model.ListViewModels.Where(x => x.VisibleFlag))
+                            {
+                                <td data-col="@item.ItemName">
+                                    @(item.Values.Count > i ? item.Values[i] : "")
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- モーダル -->
+        @{
+            var modalModel = new ListModalModel
+            {
+                ListViewModels = Model.ListViewModels,
+                ListModal = "Screen1"
+            };
         }
-    </table>
+        <partial name="_ListModal" model="modalModel" />
 
-    <!-- モーダル -->
-    @{
-        var modalModel = new ListModalModel
-        {
-            ListViewModels = Model.ListViewModels,
-            ListModal = "Screen1"
-        };
-    }
-
-    <partial name="_ListModal" model="modalModel" />
-
+    </div>
 </div>
+<script>
+    // ===== 「適用」ボタン押下時の処理 =====
+    document.querySelector('#listModal .btn-primary').addEventListener('click', async function () {
+        const checkboxes = document.querySelectorAll('#listModal .form-check-input');
+    
+        // 全チェックボックスをループしてDB更新＆テーブル操作
+        const promises = Array.from(checkboxes).map(chk => {
+            const itemName = chk.dataset.item;
+            const isChecked = chk.checked;
+
+            // テーブルの列を表示/非表示
+            const cols = document.querySelectorAll(`[data-col="${itemName}"]`);
+            cols.forEach(col => col.style.display = isChecked ? '' : 'none');
+
+            // DB更新（Ajax）
+            return fetch('/Home/UpdateVisible', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    visibleFlg: isChecked,
+                    itemName: itemName,
+                    screenId: 1,
+                    userId: 1
+                })
+            });
+        });
+
+        await Promise.all(promises);
+
+        // モーダルを閉じる
+        bootstrap.Modal.getInstance(document.getElementById('listModal')).hide();
+    });
+</script>

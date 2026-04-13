@@ -1,23 +1,86 @@
-﻿.table-container {
+﻿.page-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    margin-top: 300px;
+}
+
+.table-wrapper {
+    position: relative;
+    max-width: 1200px;
     width: 100%;
+}
+
+.btn-settings {
+    position: absolute;
+    top: -40px;
+    right: 0;
+}
+
+.scroll-area {
     overflow-x: auto;
-    margin-top: 350px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
 }
 
 .custom-table {
     border-collapse: collapse;
-    min-width: 800px;
+    table-layout: fixed;
+    min-width: 100%;
 }
 
-    .custom-table th {
-        border: 1px solid #ccc;
-        padding: 10px;
-        white-space: nowrap;
-        background-color: #f5f5f5;
-    }
+.custom-table th,
+.custom-table td {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    padding: 5px 10px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-    .custom-table td {
-        border: 1px solid #ccc;
-        padding: 10px;
-        white-space: nowrap;
-    }
+.custom-table th {
+    background-color: #9bbee0;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+    border-radius: 8px;
+    border: none;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-table tbody tr:hover td {
+    background-color: #f8f9fa;
+}
+.btn:focus,
+.btn:active,
+.btn:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.modal-header {
+    border-bottom: none; 
+}
+.modal-footer {
+    border-top: none;
+}
+.modal-content {
+    margin-top: 250px;
+}
+.scroll-area {
+    border: none;
+}
+.custom-table tr:nth-child(even) {
+    background-color: #f2f2f2; /* グレー */
+}
+
+.custom-table tr:nth-child(odd) {
+    background-color: #ffffff; /* 白 */
+}
