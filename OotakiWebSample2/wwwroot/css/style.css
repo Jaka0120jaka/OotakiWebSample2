@@ -84,3 +84,19 @@
 .custom-table tr:nth-child(odd) {
     background-color: #ffffff; /* 白 */
 }
+.btn-primary {
+    --bs-btn-color: #000000eb;
+    --bs-btn-bg: #73a9dd;
+    --bs-btn-border-color: #73a9dd;
+    --bs-btn-hover-color: #000000eb;
+    --bs-btn-hover-bg: #3982c7;
+    --bs-btn-hover-border-color: #3982c7;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #000000eb;
+    --bs-btn-active-bg: #3982c7;
+    --bs-btn-active-border-color: #3982c7;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #000000eb;
+    --bs-btn-disabled-bg: #73a9dd;
+    --bs-btn-disabled-border-color: #73a9dd;
+}

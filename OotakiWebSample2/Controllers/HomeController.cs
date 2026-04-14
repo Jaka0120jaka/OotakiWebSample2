@@ -31,7 +31,7 @@ namespace OotakiWebSample2.Controllers
             return Ok();
         }
 
-        // ===== エラー画面 =====
+        //エラー画面
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
