@@ -1,29 +1,30 @@
 ﻿@model OotakiWebSample2.Models.ListModalModel
 
-<!-- モーダル全体 -->
+@* 表示設定モーダル（Bootstrap Modal）
+   Index.cshtml の「表示設定」ボタン（data-bs-target="#listModal"）から呼び出される *@
 <div class="modal fade" id="listModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
 
             <!-- ヘッダー部分 -->
             <div class="modal-header">
-                <h5 class="modal-title">表示設定</h5> <!-- モーダルタイトル -->
+                <h5 class="modal-title">表示設定</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- ボディ -->
+            <!-- ボディ：ListViewModels の全項目をチェックボックス形式で表示 -->
             <div class="modal-body">
-
-                <!-- ViewModelのリストをループ -->
                 <div class="row">
+                    @* 全項目をループしてチェックボックスを生成 *@
                     @foreach (var item in Model.ListViewModels)
                     {
                         <div class="col-2">
-
-                            <!-- チェックボックス -->
                             <div class="form-check">
 
-                                <!-- チェックボックス本体 -->
+                                @* チェックボックス本体
+                                   data-item  : JS での項目特定に使用
+                                   id         : スペースを "_" に置換して一意なIDを生成
+                                   checked    : VisibleFlag が true の場合にチェック済み状態で表示 *@
                                 <input class="form-check-input"
                                        type="checkbox"
                                        value="@item.ItemName"
@@ -31,7 +32,7 @@
                                        data-item="@item.ItemName"
                                        @(item.VisibleFlag ? "checked" : "") />
 
-                                <!-- チェックボックスのラベル -->
+                                @* for 属性を input の id と一致させてクリック範囲を拡張 *@
                                 <label class="form-check-label"
                                        for="chk_@item.ItemName.Replace(" ", "_")">
                                     @item.ItemName
@@ -45,6 +46,7 @@
 
             <!-- フッター部分 -->
             <div class="modal-footer">
+                @* 適用ボタン：Index.cshtml の JS イベント（#listModal .btn-primary）で処理される *@
                 <button type="button" class="btn btn-primary">適用</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
             </div>
@@ -52,7 +54,9 @@
         </div>
     </div>
 </div>
+
 <script>
+    // モーダルが閉じられたときにページをリロードして表示状態を最新に反映する
     const modal = document.getElementById('listModal');
             modal.addEventListener('hidden.bs.modal', function () {
                 location.reload();
