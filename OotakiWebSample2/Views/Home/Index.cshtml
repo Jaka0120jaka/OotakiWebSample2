@@ -5,6 +5,53 @@
 }
 
 <link href="~/css/style.css" rel="stylesheet" />
+<style>
+    .custom-table th {
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .custom-table th .th-inner {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .sort-icon {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 1px;
+        flex-shrink: 0;
+    }
+
+    .sort-icon svg {
+        display: block;
+    }
+
+    /* 未ソート時：両矢印を薄く表示 */
+    .sort-icon .icon-asc,
+    .sort-icon .icon-desc {
+        opacity: 0.3;
+        transition: opacity 0.15s;
+    }
+
+    /* 昇順ソート中：上矢印を強調 */
+    th[data-sort="asc"] .sort-icon .icon-asc {
+        opacity: 1;
+    }
+    th[data-sort="asc"] .sort-icon .icon-desc {
+        opacity: 0.2;
+    }
+
+    /* 降順ソート中：下矢印を強調 */
+    th[data-sort="desc"] .sort-icon .icon-desc {
+        opacity: 1;
+    }
+    th[data-sort="desc"] .sort-icon .icon-asc {
+        opacity: 0.2;
+    }
+</style>
 
 <div class="page-wrapper">
     <div class="table-wrapper">
@@ -19,28 +66,36 @@
 
         <!-- 横スクロールエリア：VisibleFlag が true の項目のみ列として表示 -->
         <div class="scroll-area">
-            <table class="custom-table">
+            <table class="custom-table" id="sortableTable">
                 <thead>
                     <tr>
-                        @* VisibleFlag が true の項目のみヘッダーに表示
-                           data-col：JS での列表示切替時に項目を特定するキー *@
                         @foreach (var item in Model.ListViewModels.Where(x => x.VisibleFlag))
                         {
-                            <th data-col="@item.ItemName">@item.ItemName</th>
+                            <th data-col="@item.ItemName" data-sort="none">
+                                <span class="th-inner">
+                                    <span>@item.ItemName</span>
+                                    <span class="sort-icon">
+                                        @* 昇順アイコン（上向き三角） *@
+                                        <svg class="icon-asc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor">
+                                            <path d="M4 0L8 5H0L4 0Z" />
+                                        </svg>
+                                        @* 降順アイコン（下向き三角） *@
+                                        <svg class="icon-desc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor">
+                                            <path d="M4 5L0 0H8L4 5Z" />
+                                        </svg>
+                                    </span>
+                                </span>
+                            </th>
                         }
                     </tr>
                 </thead>
-                @{
-                    @* 全項目の Values の最大件数を行数として使用 *@
-                    var maxRow = Model.ListViewModels.Max(x => x.Values.Count);
-                }
                 <tbody>
-                    @* 最大行数分ループしてデータ行を生成 *@
+                    @{
+                        var maxRow = Model.ListViewModels.Max(x => x.Values.Count);
+                    }
                     @for (int i = 0; i < maxRow; i++)
                     {
                         <tr>
-                            @* VisibleFlag が true の項目のみセルとして表示
-                               Values[i] が存在しない場合は空文字を表示 *@
                             @foreach (var item in Model.ListViewModels.Where(x => x.VisibleFlag))
                             {
                                 <td data-col="@item.ItemName">
@@ -102,4 +157,75 @@
         // モーダルを閉じる
         bootstrap.Modal.getInstance(document.getElementById('listModal')).hide();
     });
+
+
+    // ===== 降順・昇順ソート処理 =====
+
+    (function () {
+        const table = document.getElementById('sortableTable');
+        if (!table) return;
+
+        // オリジナルの行順を保持
+        const tbody = table.querySelector('tbody');
+        const originalRows = Array.from(tbody.querySelectorAll('tr'));
+
+        table.querySelectorAll('thead th').forEach(function (th) {
+            th.addEventListener('click', function () {
+                const colName = th.getAttribute('data-col');
+                const currentSort = th.getAttribute('data-sort');
+
+                // ソート順を切り替え: none → asc → desc → none
+                let nextSort;
+                if (currentSort === 'none') {
+                    nextSort = 'asc';
+                } else if (currentSort === 'asc') {
+                    nextSort = 'desc';
+                } else {
+                    nextSort = 'none';
+                }
+
+                // 全ヘッダーをリセット
+                table.querySelectorAll('thead th').forEach(function (otherTh) {
+                    otherTh.setAttribute('data-sort', 'none');
+                });
+
+                th.setAttribute('data-sort', nextSort);
+
+                // 行を並べ替え
+                let rows = Array.from(tbody.querySelectorAll('tr'));
+
+                if (nextSort === 'none') {
+                    // 元の順序に戻す
+                    originalRows.forEach(function (row) {
+                        tbody.appendChild(row);
+                    });
+                    return;
+                }
+
+                rows.sort(function (rowA, rowB) {
+                    const cellA = rowA.querySelector('td[data-col="' + colName + '"]');
+                    const cellB = rowB.querySelector('td[data-col="' + colName + '"]');
+                    const valA = cellA ? cellA.textContent.trim() : '';
+                    const valB = cellB ? cellB.textContent.trim() : '';
+
+                    // 数値として比較できる場合は数値ソート
+                    const numA = parseFloat(valA.replace(/,/g, ''));
+                    const numB = parseFloat(valB.replace(/,/g, ''));
+
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return nextSort === 'asc' ? numA - numB : numB - numA;
+                    }
+
+                    // 文字列ソート（日本語対応）
+                    return nextSort === 'asc'
+                        ? valA.localeCompare(valB, 'ja')
+                        : valB.localeCompare(valA, 'ja');
+                });
+
+                rows.forEach(function (row) {
+                    tbody.appendChild(row);
+                });
+            });
+        });
+    })();
 </script>
